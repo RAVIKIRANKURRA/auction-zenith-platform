@@ -20,7 +20,7 @@ const Auctions = () => {
   const [auctions, setAuctions] = useState<AuctionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [sortBy, setSortBy] = useState('ending-soon');
   
   useEffect(() => {
@@ -31,7 +31,7 @@ const Auctions = () => {
           status: 'active'
         };
         
-        if (selectedCategory) {
+        if (selectedCategory && selectedCategory !== 'all') {
           filter.category = selectedCategory;
         }
         
@@ -74,7 +74,7 @@ const Auctions = () => {
   
   const handleCategoryChange = (value: string) => {
     setSelectedCategory(value);
-    if (value) {
+    if (value && value !== 'all') {
       searchParams.set('category', value);
     } else {
       searchParams.delete('category');
@@ -88,7 +88,7 @@ const Auctions = () => {
   };
   
   const clearFilters = () => {
-    setSelectedCategory('');
+    setSelectedCategory('all');
     setSortBy('ending-soon');
     setSearchTerm('');
     setSearchParams({});
@@ -152,7 +152,7 @@ const Auctions = () => {
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
