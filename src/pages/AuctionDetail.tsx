@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -115,14 +114,11 @@ const AuctionDetail = () => {
     }
     
     try {
-      const newBid = await placeBid(auction.id, user.id, user.name, bidAmountNum);
+      // Fix the placeBid call - pass only 3 arguments as expected
+      const updatedAuction = await placeBid(auction.id, user.id, bidAmountNum);
       
       // Update auction with new bid
-      setAuction({
-        ...auction,
-        currentPrice: bidAmountNum,
-        bids: [newBid, ...auction.bids]
-      });
+      setAuction(updatedAuction);
       
       toast({
         title: "Bid placed successfully!",
@@ -141,7 +137,7 @@ const AuctionDetail = () => {
     }
   };
   
-  const formatDate = (date: Date) => {
+  const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -256,7 +252,7 @@ const AuctionDetail = () => {
               <div className="flex-1">
                 <div className="text-sm text-gray-500">Time Remaining</div>
                 <CountdownTimer 
-                  endDate={auction.endDate} 
+                  endDate={new Date(auction.endDate)} 
                   className="text-lg font-semibold"
                 />
               </div>

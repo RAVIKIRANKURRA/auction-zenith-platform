@@ -56,7 +56,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check if user is stored in localStorage on mount
     const storedUser = localStorage.getItem('auctionUser');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Error parsing stored user:", error);
+        localStorage.removeItem('auctionUser');
+      }
     }
   }, []);
 
@@ -68,9 +74,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const mockUser = mockUsers[lowerEmail];
     
     if (mockUser && mockUser.password === password) {
-      const { password, ...userWithoutPassword } = mockUser;
+      const { password: _, ...userWithoutPassword } = mockUser;
       setUser(userWithoutPassword);
       localStorage.setItem('auctionUser', JSON.stringify(userWithoutPassword));
+      
       toast({
         title: "Login successful",
         description: `Welcome back, ${mockUser.name}!`,
@@ -108,6 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       role
     };
     
+    // Update mockUsers object with the new user
     mockUsers[lowerEmail] = newUser;
     
     const { password: _, ...userWithoutPassword } = newUser;

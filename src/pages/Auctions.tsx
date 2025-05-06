@@ -40,9 +40,9 @@ const Auctions = () => {
         // Sort auctions
         let sortedAuctions = [...auctionsData];
         if (sortBy === 'ending-soon') {
-          sortedAuctions.sort((a, b) => a.endDate.getTime() - b.endDate.getTime());
+          sortedAuctions.sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime());
         } else if (sortBy === 'newest') {
-          sortedAuctions.sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
+          sortedAuctions.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
         } else if (sortBy === 'price-high') {
           sortedAuctions.sort((a, b) => b.currentPrice - a.currentPrice);
         } else if (sortBy === 'price-low') {
