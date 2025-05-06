@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 
 // Types
@@ -25,6 +24,7 @@ export interface Bid {
   amount: number;
   timestamp: string;
   bidder: User;
+  userName?: string; // Add this for compatibility with AdminDashboard and AuctionDetail
 }
 
 export interface User {
@@ -46,7 +46,7 @@ interface AuctionFilter {
 }
 
 // Helper to generate random date within range
-const randomDate = (start: Date, end: Date) => {
+const randomDate = (start: Date, end: Date): string => {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString();
 };
 
@@ -124,7 +124,8 @@ const mockAuctions: AuctionItem[] = [
         id: uuidv4(),
         amount: 16000,
         timestamp: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
-        bidder: users[3]
+        bidder: users[3],
+        userName: users[3].name
       },
       {
         id: uuidv4(),
@@ -528,14 +529,14 @@ const mockAuctions: AuctionItem[] = [
 ];
 
 // Format currency to Indian Rupees
-export const formatCurrency = (amount: number, withSymbol: boolean = true) => {
+export const formatCurrency = (amount: number, withSymbol: boolean = true): string => {
   // Format with comma separators for Indian number system (lakhs and crores)
   const formattedAmount = amount.toLocaleString('en-IN');
   return withSymbol ? `₹${formattedAmount}` : formattedAmount;
 };
 
 // Calculate time remaining for auction
-export const calculateTimeRemaining = (endDate: string) => {
+export const calculateTimeRemaining = (endDate: string): string => {
   const end = new Date(endDate).getTime();
   const now = new Date().getTime();
   const difference = end - now;
@@ -617,7 +618,7 @@ export const getAuctionById = (id: string): Promise<AuctionItem> => {
   });
 };
 
-export const placeBid = (auctionId: string, userId: string, amount: number): Promise<AuctionItem> => {
+export const placeBid = (auctionId: string, userId: string, userName: string, amount: number): Promise<Bid> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       const auctionIndex = mockAuctions.findIndex(a => a.id === auctionId);
@@ -654,7 +655,8 @@ export const placeBid = (auctionId: string, userId: string, amount: number): Pro
         id: uuidv4(),
         amount,
         timestamp: new Date().toISOString(),
-        bidder
+        bidder,
+        userName: userName || bidder.name
       };
       
       auction.bids = [...auction.bids, newBid];
@@ -662,7 +664,7 @@ export const placeBid = (auctionId: string, userId: string, amount: number): Pro
       
       mockAuctions[auctionIndex] = auction;
       
-      resolve(auction);
+      resolve(newBid);
     }, 600);
   });
 };
@@ -704,5 +706,26 @@ export const createAuction = (auctionData: Partial<AuctionItem>, sellerId: strin
       
       resolve(newAuction);
     }, 800);
+  });
+};
+
+// Add updateAuctionStatus function for AdminDashboard
+export const updateAuctionStatus = (auctionId: string, status: 'pending' | 'active' | 'closed'): Promise<AuctionItem> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const auctionIndex = mockAuctions.findIndex(a => a.id === auctionId);
+      
+      if (auctionIndex === -1) {
+        reject(new Error("Auction not found"));
+        return;
+      }
+      
+      const auction = { ...mockAuctions[auctionIndex] };
+      auction.status = status;
+      
+      mockAuctions[auctionIndex] = auction;
+      
+      resolve(auction);
+    }, 600);
   });
 };
