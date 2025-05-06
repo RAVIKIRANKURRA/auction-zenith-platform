@@ -1,16 +1,52 @@
 
 import { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
-import { calculateTimeRemaining } from '@/services/auctionService';
+
+interface TimeRemaining {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  isEnded: boolean;
+}
 
 interface CountdownTimerProps {
-  endDate: Date;
+  endDate: string;
   onEnd?: () => void;
   className?: string;
 }
 
+const calculateTimeRemaining = (endDate: string): TimeRemaining => {
+  const end = new Date(endDate).getTime();
+  const now = new Date().getTime();
+  const difference = end - now;
+  
+  if (difference <= 0) {
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      isEnded: true
+    };
+  }
+  
+  const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+  
+  return {
+    days,
+    hours,
+    minutes,
+    seconds,
+    isEnded: false
+  };
+};
+
 const CountdownTimer = ({ endDate, onEnd, className = '' }: CountdownTimerProps) => {
-  const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining(endDate));
+  const [timeRemaining, setTimeRemaining] = useState<TimeRemaining>(calculateTimeRemaining(endDate));
 
   useEffect(() => {
     const timer = setInterval(() => {

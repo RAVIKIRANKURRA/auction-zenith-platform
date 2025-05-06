@@ -52,7 +52,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
           
           <div className="mt-2">
             <CountdownTimer 
-              endDate={endDate} 
+              endDate={endDate}
               className="text-sm font-medium"
             />
           </div>
