@@ -139,10 +139,10 @@ const AuctionDetail = () => {
   };
   
   const formatDate = (date: string | Date) => {
-    // Fix: Ensure we're always converting to a string by using toISOString
-    const dateObj = date instanceof Date ? date.toISOString() : date;
+    // Fix: Ensure we're always working with a string
+    const dateString = typeof date === 'object' ? date.toISOString() : date;
     // Then format the string date
-    return new Date(dateObj).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',

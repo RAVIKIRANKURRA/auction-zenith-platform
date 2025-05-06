@@ -653,7 +653,7 @@ export const getAuctions = (filter: AuctionFilter = {}): Promise<AuctionItem[]> 
       }
       
       resolve(filtered);
-    }, 800); // Fixed the missing closing parenthesis and increased timeout for better UX
+    }, 800); // Fixed the missing closing parenthesis and timeout value
   });
 };
 
@@ -698,11 +698,30 @@ export const placeBid = (auctionId: string, userId: string, amount: number): Pro
         return;
       }
       
-      const user = users.find((u) => u.id === userId);
+      // Find user in the mock data but also check for registered users via email
+      let user = users.find((u) => u.id === userId);
       
+      // If the user isn't found in our mock users, create a temporary user from the ID
+      // This resolves the issue when a registered user (from AuthContext) tries to bid
       if (!user) {
-        reject(new Error("User not found"));
-        return;
+        // Get the stored user from localStorage as fallback
+        const storedUserJSON = localStorage.getItem('auctionUser');
+        if (storedUserJSON) {
+          try {
+            const storedUser = JSON.parse(storedUserJSON);
+            if (storedUser.id === userId) {
+              user = storedUser;
+            }
+          } catch (error) {
+            console.error("Error parsing stored user:", error);
+          }
+        }
+        
+        // If we still don't have a user, reject
+        if (!user) {
+          reject(new Error("User not found"));
+          return;
+        }
       }
       
       const newBid: Bid = {
