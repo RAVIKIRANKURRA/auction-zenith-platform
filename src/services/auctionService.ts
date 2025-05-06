@@ -17,7 +17,7 @@ export interface AuctionItem {
   startDate: string;
   endDate: string;
   seller: User;
-  sellerName: string; // Add sellerName to interface
+  sellerName: string;
   category: string;
   condition: string;
   status: 'pending' | 'active' | 'closed';
@@ -30,7 +30,7 @@ export interface Bid {
   amount: number;
   timestamp: string;
   bidder: User;
-  userName: string; // Add userName to interface
+  userName: string;
 }
 
 export interface User {
@@ -169,13 +169,15 @@ const createMockAuctions = (): AuctionItem[] => {
           id: uuidv4(),
           amount: 40000,
           timestamp: randomDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[4]
+          bidder: users[4],
+          userName: users[4].name
         },
         {
           id: uuidv4(),
           amount: 42000,
           timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[5]
+          bidder: users[5],
+          userName: users[5].name
         }
       ],
       featured: true
@@ -200,19 +202,22 @@ const createMockAuctions = (): AuctionItem[] => {
           id: uuidv4(),
           amount: 80000,
           timestamp: randomDate(new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[6]
+          bidder: users[6],
+          userName: users[6].name
         },
         {
           id: uuidv4(),
           amount: 85000,
           timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[3]
+          bidder: users[3],
+          userName: users[3].name
         },
         {
           id: uuidv4(),
           amount: 92000,
           timestamp: randomDate(new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[5]
+          bidder: users[5],
+          userName: users[5].name
         }
       ]
     },
@@ -236,19 +241,22 @@ const createMockAuctions = (): AuctionItem[] => {
           id: uuidv4(),
           amount: 185000,
           timestamp: randomDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[3]
+          bidder: users[3],
+          userName: users[3].name
         },
         {
           id: uuidv4(),
           amount: 195000,
           timestamp: randomDate(new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[4]
+          bidder: users[4],
+          userName: users[4].name
         },
         {
           id: uuidv4(),
           amount: 205000,
           timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[6]
+          bidder: users[6],
+          userName: users[6].name
         }
       ],
       featured: true
@@ -273,19 +281,22 @@ const createMockAuctions = (): AuctionItem[] => {
           id: uuidv4(),
           amount: 26000,
           timestamp: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[5]
+          bidder: users[5],
+          userName: users[5].name
         },
         {
           id: uuidv4(),
           amount: 30000,
           timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[3]
+          bidder: users[3],
+          userName: users[3].name
         },
         {
           id: uuidv4(),
           amount: 36000,
           timestamp: randomDate(new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[6]
+          bidder: users[6],
+          userName: users[6].name
         }
       ]
     },
@@ -309,19 +320,22 @@ const createMockAuctions = (): AuctionItem[] => {
           id: uuidv4(),
           amount: 51000,
           timestamp: randomDate(new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[4]
+          bidder: users[4],
+          userName: users[4].name
         },
         {
           id: uuidv4(),
           amount: 58000,
           timestamp: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[5]
+          bidder: users[5],
+          userName: users[5].name
         },
         {
           id: uuidv4(),
           amount: 65000,
           timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[3]
+          bidder: users[3],
+          userName: users[3].name
         }
       ],
       featured: true
@@ -346,19 +360,22 @@ const createMockAuctions = (): AuctionItem[] => {
           id: uuidv4(),
           amount: 34000,
           timestamp: randomDate(new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[6]
+          bidder: users[6],
+          userName: users[6].name
         },
         {
           id: uuidv4(),
           amount: 41000,
           timestamp: randomDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[4]
+          bidder: users[4],
+          userName: users[4].name
         },
         {
           id: uuidv4(),
           amount: 47000,
           timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[5]
+          bidder: users[5],
+          userName: users[5].name
         }
       ]
     },
@@ -382,19 +399,22 @@ const createMockAuctions = (): AuctionItem[] => {
           id: uuidv4(),
           amount: 19000,
           timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[3]
+          bidder: users[3],
+          userName: users[3].name
         },
         {
           id: uuidv4(),
           amount: 23000,
           timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[5]
+          bidder: users[5],
+          userName: users[5].name
         },
         {
           id: uuidv4(),
           amount: 26500,
           timestamp: randomDate(new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[4]
+          bidder: users[4],
+          userName: users[4].name
         }
       ]
     },
@@ -418,22 +438,24 @@ const createMockAuctions = (): AuctionItem[] => {
           id: uuidv4(),
           amount: 125000,
           timestamp: randomDate(new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[6]
+          bidder: users[6],
+          userName: users[6].name
         },
         {
           id: uuidv4(),
           amount: 140000,
           timestamp: randomDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[4]
+          bidder: users[4],
+          userName: users[4].name
         },
         {
           id: uuidv4(),
           amount: 155000,
           timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[5]
+          bidder: users[5],
+          userName: users[5].name
         }
-      ],
-      featured: true
+      ]
     },
     {
       id: "auction10",
@@ -455,19 +477,22 @@ const createMockAuctions = (): AuctionItem[] => {
           id: uuidv4(),
           amount: 88000,
           timestamp: randomDate(new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[3]
+          bidder: users[3],
+          userName: users[3].name
         },
         {
           id: uuidv4(),
           amount: 95000,
           timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[4]
+          bidder: users[4],
+          userName: users[4].name
         },
         {
           id: uuidv4(),
           amount: 108000,
           timestamp: randomDate(new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[6]
+          bidder: users[6],
+          userName: users[6].name
         }
       ]
     },
@@ -491,19 +516,22 @@ const createMockAuctions = (): AuctionItem[] => {
           id: uuidv4(),
           amount: 44000,
           timestamp: randomDate(new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[5]
+          bidder: users[5],
+          userName: users[5].name
         },
         {
           id: uuidv4(),
           amount: 50000,
           timestamp: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[3]
+          bidder: users[3],
+          userName: users[3].name
         },
         {
           id: uuidv4(),
           amount: 56000,
           timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[4]
+          bidder: users[4],
+          userName: users[4].name
         }
       ]
     },
@@ -527,19 +555,22 @@ const createMockAuctions = (): AuctionItem[] => {
           id: uuidv4(),
           amount: 240000,
           timestamp: randomDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[6]
+          bidder: users[6],
+          userName: users[6].name
         },
         {
           id: uuidv4(),
           amount: 260000,
           timestamp: randomDate(new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[4]
+          bidder: users[4],
+          userName: users[4].name
         },
         {
           id: uuidv4(),
           amount: 280000,
           timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
-          bidder: users[5]
+          bidder: users[5],
+          userName: users[5].name
         }
       ],
       featured: true
@@ -621,136 +652,4 @@ export const getAuctions = (filter: AuctionFilter = {}): Promise<AuctionItem[]> 
       }
       
       resolve(filtered);
-    }, 800);
-  });
-};
-
-export const getAuctionById = (id: string): Promise<AuctionItem> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const auction = mockAuctions.find((a) => a.id === id);
-      
-      if (auction) {
-        resolve({
-          ...auction,
-          sellerName: auction.seller.name // Ensure sellerName is set
-        });
-      } else {
-        reject(new Error("Auction not found"));
-      }
-    }, 500);
-  });
-};
-
-export const placeBid = (auctionId: string, userId: string, amount: number): Promise<AuctionItem> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const auctionIndex = mockAuctions.findIndex((a) => a.id === auctionId);
-      
-      if (auctionIndex === -1) {
-        reject(new Error("Auction not found"));
-        return;
-      }
-      
-      const auction = { ...mockAuctions[auctionIndex] };
-      const bidder = users.find((u) => u.id === userId);
-      
-      if (!bidder) {
-        reject(new Error("User not found"));
-        return;
-      }
-      
-      if (auction.status !== 'active') {
-        reject(new Error("Auction is not active"));
-        return;
-      }
-      
-      if (amount <= auction.currentPrice) {
-        reject(new Error("Bid must be higher than current price"));
-        return;
-      }
-      
-      if (amount < auction.currentPrice + auction.minIncrement) {
-        reject(new Error(`Minimum bid increment is ${formatCurrency(auction.minIncrement)}`));
-        return;
-      }
-      
-      const newBid: Bid = {
-        id: uuidv4(),
-        amount,
-        timestamp: new Date().toISOString(),
-        bidder,
-        userName: bidder.name
-      };
-      
-      auction.bids = [newBid, ...auction.bids];
-      auction.currentPrice = amount;
-      
-      mockAuctions[auctionIndex] = auction;
-      
-      resolve(auction);
-    }, 600);
-  });
-};
-
-export const createAuction = (auctionData: Partial<AuctionItem>, sellerId: string): Promise<AuctionItem> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const seller = users.find((u) => u.id === sellerId);
-      
-      if (!seller) {
-        reject(new Error("Seller not found"));
-        return;
-      }
-      
-      if (seller.role !== 'seller' && seller.role !== 'admin') {
-        reject(new Error("User does not have permission to create auctions"));
-        return;
-      }
-      
-      const newAuction: AuctionItem = {
-        id: uuidv4(),
-        title: auctionData.title || "Untitled Auction",
-        description: auctionData.description || "",
-        images: auctionData.images || [],
-        startingPrice: auctionData.startingPrice || 0,
-        currentPrice: auctionData.startingPrice || 0,
-        minIncrement: auctionData.minIncrement || 100,
-        startDate: auctionData.startDate || new Date().toISOString(),
-        endDate: auctionData.endDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        seller: seller,
-        sellerName: seller.name,
-        category: auctionData.category || "Other",
-        condition: auctionData.condition || "Used",
-        status: auctionData.status || 'pending',
-        bids: [],
-        featured: auctionData.featured || false
-      };
-      
-      mockAuctions.push(newAuction);
-      
-      resolve(newAuction);
-    }, 800);
-  });
-};
-
-// Add updateAuctionStatus function for AdminDashboard
-export const updateAuctionStatus = (auctionId: string, status: 'pending' | 'active' | 'closed'): Promise<AuctionItem> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const auctionIndex = mockAuctions.findIndex(a => a.id === auctionId);
-      
-      if (auctionIndex === -1) {
-        reject(new Error("Auction not found"));
-        return;
-      }
-      
-      const auction = { ...mockAuctions[auctionIndex] };
-      auction.status = status;
-      
-      mockAuctions[auctionIndex] = auction;
-      
-      resolve(auction);
-    }, 600);
-  });
-};
+    }, 80
