@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 
 // Helper to generate random date within range
@@ -652,4 +653,120 @@ export const getAuctions = (filter: AuctionFilter = {}): Promise<AuctionItem[]> 
       }
       
       resolve(filtered);
-    }, 80
+    }, 800); // Fixed the missing closing parenthesis and increased timeout for better UX
+  });
+};
+
+// Get auction by ID
+export const getAuctionById = (id: string): Promise<AuctionItem | null> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const auction = mockAuctions.find((a) => a.id === id) || null;
+      resolve(auction);
+    }, 500);
+  });
+};
+
+// Place bid on an auction
+export const placeBid = (auctionId: string, userId: string, amount: number): Promise<AuctionItem> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const auctionIndex = mockAuctions.findIndex((a) => a.id === auctionId);
+      
+      if (auctionIndex === -1) {
+        reject(new Error("Auction not found"));
+        return;
+      }
+      
+      const auction = mockAuctions[auctionIndex];
+      
+      if (auction.status !== 'active') {
+        reject(new Error("This auction is not active"));
+        return;
+      }
+      
+      const now = new Date();
+      const endDate = new Date(auction.endDate);
+      
+      if (now > endDate) {
+        reject(new Error("This auction has ended"));
+        return;
+      }
+      
+      if (amount <= auction.currentPrice) {
+        reject(new Error(`Your bid must be higher than the current bid (${formatCurrency(auction.currentPrice)})`));
+        return;
+      }
+      
+      const user = users.find((u) => u.id === userId);
+      
+      if (!user) {
+        reject(new Error("User not found"));
+        return;
+      }
+      
+      const newBid: Bid = {
+        id: uuidv4(),
+        amount: amount,
+        timestamp: new Date().toISOString(),
+        bidder: user,
+        userName: user.name
+      };
+      
+      // Create a new auction object with updated bid
+      const updatedAuction = {
+        ...auction,
+        currentPrice: amount,
+        bids: [newBid, ...auction.bids]
+      };
+      
+      // Update the auction in the mock data
+      mockAuctions[auctionIndex] = updatedAuction;
+      
+      resolve(updatedAuction);
+    }, 800);
+  });
+};
+
+// Get featured auctions
+export const getFeaturedAuctions = (): Promise<AuctionItem[]> => {
+  return getAuctions({ featured: true });
+};
+
+// Get auctions by category
+export const getAuctionsByCategory = (category: string): Promise<AuctionItem[]> => {
+  return getAuctions({ category });
+};
+
+// Get auctions by seller
+export const getAuctionsBySeller = (sellerId: string): Promise<AuctionItem[]> => {
+  return getAuctions({ seller: sellerId });
+};
+
+// Search auctions
+export const searchAuctions = (query: string): Promise<AuctionItem[]> => {
+  return getAuctions({ search: query });
+};
+
+// Update auction status
+export const updateAuctionStatus = (id: string, status: 'pending' | 'active' | 'closed'): Promise<AuctionItem> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const auctionIndex = mockAuctions.findIndex((a) => a.id === id);
+      
+      if (auctionIndex === -1) {
+        reject(new Error("Auction not found"));
+        return;
+      }
+      
+      const updatedAuction = {
+        ...mockAuctions[auctionIndex],
+        status
+      };
+      
+      mockAuctions[auctionIndex] = updatedAuction;
+      
+      resolve(updatedAuction);
+    }, 500);
+  });
+};
