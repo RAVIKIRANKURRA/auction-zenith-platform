@@ -139,8 +139,10 @@ const AuctionDetail = () => {
   };
   
   const formatDate = (date: string | Date) => {
-    // Fix: Ensure we're always using a Date object for formatting
-    return new Date(date).toLocaleDateString('en-US', {
+    // Fix: Ensure we're always converting to a string by using toISOString
+    const dateObj = date instanceof Date ? date.toISOString() : date;
+    // Then format the string date
+    return new Date(dateObj).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -202,13 +204,13 @@ const AuctionDetail = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/auctions?category=${auction.category}`}>
-                {auction.category}
+              <BreadcrumbLink href={`/auctions?category=${auction?.category}`}>
+                {auction?.category}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink>{auction.title}</BreadcrumbLink>
+              <BreadcrumbLink>{auction?.title}</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -218,8 +220,8 @@ const AuctionDetail = () => {
           <div>
             <div className="aspect-square w-full overflow-hidden rounded-lg bg-gray-100 mb-4">
               <img 
-                src={auction.images[0] || '/placeholder.svg'} 
-                alt={auction.title}
+                src={auction?.images[0] || '/placeholder.svg'} 
+                alt={auction?.title}
                 className="h-full w-full object-cover object-center"
               />
             </div>
@@ -230,12 +232,12 @@ const AuctionDetail = () => {
           {/* Auction Info */}
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-auction-primary mb-2">
-              {auction.title}
+              {auction?.title}
             </h1>
             
             <div className="flex items-center text-sm text-gray-500 mb-4">
               <Tag className="h-4 w-4 mr-1" />
-              <span className="mr-4">{auction.category}</span>
+              <span className="mr-4">{auction?.category}</span>
               <Eye className="h-4 w-4 mr-1" />
               <span>{Math.floor(Math.random() * 50) + 10} watching</span>
             </div>
@@ -244,17 +246,17 @@ const AuctionDetail = () => {
               <div className="flex-1">
                 <div className="text-sm text-gray-500">Current Bid</div>
                 <div className="text-2xl font-bold text-auction-primary">
-                  {formatCurrency(auction.currentPrice)}
+                  {formatCurrency(auction?.currentPrice ?? 0)}
                 </div>
                 <div className="text-sm text-gray-500">
-                  {auction.bids.length} bid{auction.bids.length !== 1 ? 's' : ''}
+                  {auction?.bids.length} bid{auction?.bids.length !== 1 ? 's' : ''}
                 </div>
               </div>
               
               <div className="flex-1">
                 <div className="text-sm text-gray-500">Time Remaining</div>
                 <CountdownTimer 
-                  endDate={new Date(auction.endDate)} 
+                  endDate={new Date(auction?.endDate ?? '')} 
                   className="text-lg font-semibold"
                 />
               </div>
@@ -278,22 +280,22 @@ const AuctionDetail = () => {
                 <div className="flex items-center">
                   <User className="h-4 w-4 mr-2 text-gray-500" />
                   <span className="text-gray-500 mr-2">Seller:</span>
-                  <span>{auction.sellerName}</span>
+                  <span>{auction?.sellerName}</span>
                 </div>
                 <div className="flex items-center">
                   <CalendarDays className="h-4 w-4 mr-2 text-gray-500" />
                   <span className="text-gray-500 mr-2">Started:</span>
-                  <span>{formatDate(auction.startDate)}</span>
+                  <span>{auction?.startDate ? formatDate(auction.startDate) : ''}</span>
                 </div>
                 <div className="flex items-center">
                   <Clock className="h-4 w-4 mr-2 text-gray-500" />
                   <span className="text-gray-500 mr-2">Ends:</span>
-                  <span>{formatDate(auction.endDate)}</span>
+                  <span>{auction?.endDate ? formatDate(auction.endDate) : ''}</span>
                 </div>
                 <div className="flex items-center">
                   <DollarSign className="h-4 w-4 mr-2 text-gray-500" />
                   <span className="text-gray-500 mr-2">Starting Price:</span>
-                  <span>{formatCurrency(auction.startingPrice)}</span>
+                  <span>{formatCurrency(auction?.startingPrice ?? 0)}</span>
                 </div>
               </CardContent>
             </Card>
@@ -305,7 +307,7 @@ const AuctionDetail = () => {
           <h2 className="text-xl font-bold mb-4">Item Description</h2>
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <p className="text-gray-700 whitespace-pre-line">
-              {auction.description}
+              {auction?.description}
             </p>
           </div>
         </div>
@@ -316,14 +318,14 @@ const AuctionDetail = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">
-                {auction.bids.length} Bid{auction.bids.length !== 1 ? 's' : ''}
+                {auction?.bids.length} Bid{auction?.bids.length !== 1 ? 's' : ''}
               </CardTitle>
               <CardDescription>
                 Showing all bids for this auction
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {auction.bids.length > 0 ? (
+              {auction?.bids.length ? (
                 <div className="space-y-4">
                   {auction.bids.map((bid) => (
                     <div key={bid.id} className="flex items-center justify-between pb-3 border-b">
@@ -356,14 +358,14 @@ const AuctionDetail = () => {
           <DialogHeader>
             <DialogTitle>Place a Bid</DialogTitle>
             <DialogDescription>
-              You are bidding on "{auction.title}"
+              You are bidding on "{auction?.title}"
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
             <div className="flex justify-between items-center text-sm">
               <span>Current Bid:</span>
-              <span className="font-semibold">{formatCurrency(auction.currentPrice)}</span>
+              <span className="font-semibold">{formatCurrency(auction?.currentPrice ?? 0)}</span>
             </div>
             
             <div className="space-y-2">
@@ -376,7 +378,7 @@ const AuctionDetail = () => {
                   id="bidAmount"
                   type="number"
                   step="1"
-                  min={auction.currentPrice + 1}
+                  min={auction?.currentPrice ? auction.currentPrice + 1 : 1}
                   className="pl-10"
                   value={bidAmount}
                   onChange={(e) => setBidAmount(e.target.value)}
