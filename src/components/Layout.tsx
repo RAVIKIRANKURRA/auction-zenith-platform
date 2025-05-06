@@ -7,8 +7,6 @@ interface LayoutProps {
   children: ReactNode;
 }
 
-// Since we're not allowed to modify Navigation or Footer components directly,
-// we need to assume they accept siteName as a prop
 const Layout = ({ children }: LayoutProps) => {
   const siteName = "RSGM Vintage Auctions";
   

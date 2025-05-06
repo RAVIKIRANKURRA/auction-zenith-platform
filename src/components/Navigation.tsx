@@ -16,7 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const Navigation = () => {
+interface NavigationProps {
+  siteName?: string;
+}
+
+const Navigation = ({ siteName = "Auction Zenith" }: NavigationProps) => {
   const { user, logout, isAuthenticated, isAdmin, isSeller } = useAuth();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -33,7 +37,7 @@ const Navigation = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <Gavel className="h-8 w-8 mr-2 text-auction-secondary" />
-              <span className="text-xl font-bold">Auction Zenith</span>
+              <span className="text-xl font-bold">{siteName}</span>
             </Link>
           </div>
 

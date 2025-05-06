@@ -1,6 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 
-// Types
+// Helper to generate random date within range
+const randomDate = (start: Date, end: Date): string => {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString();
+};
+
+// Types for auction service
 export interface AuctionItem {
   id: string;
   title: string;
@@ -12,6 +17,7 @@ export interface AuctionItem {
   startDate: string;
   endDate: string;
   seller: User;
+  sellerName?: string; // For compatibility with AuctionDetail
   category: string;
   condition: string;
   status: 'pending' | 'active' | 'closed';
@@ -24,7 +30,7 @@ export interface Bid {
   amount: number;
   timestamp: string;
   bidder: User;
-  userName?: string; // Add this for compatibility with AdminDashboard and AuctionDetail
+  userName?: string; // For compatibility with AdminDashboard
 }
 
 export interface User {
@@ -35,9 +41,9 @@ export interface User {
   role: 'admin' | 'seller' | 'bidder';
 }
 
-interface AuctionFilter {
+export interface AuctionFilter {
   category?: string;
-  status?: 'pending' | 'active' | 'closed';
+  status?: string;
   seller?: string;
   featured?: boolean;
   minPrice?: number;
@@ -45,61 +51,56 @@ interface AuctionFilter {
   search?: string;
 }
 
-// Helper to generate random date within range
-const randomDate = (start: Date, end: Date): string => {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString();
-};
-
 // Mock data
-const users: User[] = [
+const users = [
   {
     id: "user1",
     name: "Ravi Kumar",
     email: "ravi@rsgmauctions.com",
     avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-    role: "admin"
+    role: "admin" as 'admin'
   },
   {
     id: "user2",
     name: "Shiva Reddy",
     email: "shiva@rsgmauctions.com",
     avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-    role: "seller"
+    role: "seller" as 'seller'
   },
   {
     id: "user3",
     name: "Gowtham Patel",
     email: "gowtham@rsgmauctions.com",
     avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-    role: "seller"
+    role: "seller" as 'seller'
   },
   {
     id: "user4",
     name: "Manoj Singh",
     email: "manoj@rsgmauctions.com",
     avatar: "https://randomuser.me/api/portraits/men/4.jpg",
-    role: "bidder"
+    role: "bidder" as 'bidder'
   },
   {
     id: "user5",
     name: "Priya Sharma",
     email: "priya@example.com",
     avatar: "https://randomuser.me/api/portraits/women/1.jpg",
-    role: "bidder"
+    role: "bidder" as 'bidder'
   },
   {
     id: "user6",
     name: "Vikram Malhotra",
     email: "vikram@example.com",
     avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-    role: "bidder"
+    role: "bidder" as 'bidder'
   },
   {
     id: "user7",
     name: "Ananya Desai",
     email: "ananya@example.com",
     avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-    role: "bidder"
+    role: "bidder" as 'bidder'
   }
 ];
 
@@ -109,13 +110,16 @@ const mockAuctions: AuctionItem[] = [
     id: "auction1",
     title: "Vintage Brass Maharaja Sculpture",
     description: "Exquisite 19th century brass sculpture of an Indian Maharaja on horseback. This piece showcases the intricate craftsmanship of traditional Indian metalwork with fine details and patina of age. Height: 30cm.",
-    images: ["https://images.unsplash.com/photo-1618160702438-9b02ab6515c9"],
+    images: [
+      "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9"
+    ],
     startingPrice: 15000,
     currentPrice: 22500,
     minIncrement: 1000,
     startDate: randomDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)),
     seller: users[1],
+    sellerName: users[1].name,
     category: "Art",
     condition: "Good",
     status: "active",
@@ -131,13 +135,15 @@ const mockAuctions: AuctionItem[] = [
         id: uuidv4(),
         amount: 18000,
         timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
-        bidder: users[4]
+        bidder: users[4],
+        userName: users[4].name
       },
       {
         id: uuidv4(),
         amount: 22500,
         timestamp: randomDate(new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), new Date()),
-        bidder: users[6]
+        bidder: users[6],
+        userName: users[6].name
       }
     ],
     featured: true
@@ -153,6 +159,7 @@ const mockAuctions: AuctionItem[] = [
     startDate: randomDate(new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)),
     seller: users[2],
+    sellerName: users[2].name,
     category: "Electronics",
     condition: "Excellent",
     status: "active",
@@ -183,6 +190,7 @@ const mockAuctions: AuctionItem[] = [
     startDate: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)),
     seller: users[1],
+    sellerName: users[1].name,
     category: "Art",
     condition: "Very Good",
     status: "active",
@@ -218,6 +226,7 @@ const mockAuctions: AuctionItem[] = [
     startDate: randomDate(new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), new Date(Date.now() + 12 * 24 * 60 * 60 * 1000)),
     seller: users[2],
+    sellerName: users[2].name,
     category: "Watches",
     condition: "Excellent",
     status: "active",
@@ -254,6 +263,7 @@ const mockAuctions: AuctionItem[] = [
     startDate: randomDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), new Date(Date.now() + 9 * 24 * 60 * 60 * 1000)),
     seller: users[1],
+    sellerName: users[1].name,
     category: "Coins",
     condition: "Very Good",
     status: "active",
@@ -289,6 +299,7 @@ const mockAuctions: AuctionItem[] = [
     startDate: randomDate(new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)),
     seller: users[2],
+    sellerName: users[2].name,
     category: "Furniture",
     condition: "Good",
     status: "active",
@@ -325,6 +336,7 @@ const mockAuctions: AuctionItem[] = [
     startDate: randomDate(new Date(Date.now() - 11 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), new Date(Date.now() + 8 * 24 * 60 * 60 * 1000)),
     seller: users[1],
+    sellerName: users[1].name,
     category: "Clothing",
     condition: "Excellent",
     status: "active",
@@ -360,6 +372,7 @@ const mockAuctions: AuctionItem[] = [
     startDate: randomDate(new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), new Date(Date.now() + 11 * 24 * 60 * 60 * 1000)),
     seller: users[2],
+    sellerName: users[2].name,
     category: "Books",
     condition: "Very Good",
     status: "active",
@@ -395,6 +408,7 @@ const mockAuctions: AuctionItem[] = [
     startDate: randomDate(new Date(Date.now() - 12 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), new Date(Date.now() + 9 * 24 * 60 * 60 * 1000)),
     seller: users[1],
+    sellerName: users[1].name,
     category: "Jewelry",
     condition: "Excellent",
     status: "active",
@@ -431,6 +445,7 @@ const mockAuctions: AuctionItem[] = [
     startDate: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 8 * 24 * 60 * 60 * 1000), new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)),
     seller: users[2],
+    sellerName: users[2].name,
     category: "Art",
     condition: "Very Good",
     status: "active",
@@ -466,6 +481,7 @@ const mockAuctions: AuctionItem[] = [
     startDate: randomDate(new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)),
     seller: users[1],
+    sellerName: users[1].name,
     category: "Art",
     condition: "Good",
     status: "active",
@@ -501,6 +517,7 @@ const mockAuctions: AuctionItem[] = [
     startDate: randomDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()),
     endDate: randomDate(new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), new Date(Date.now() + 12 * 24 * 60 * 60 * 1000)),
     seller: users[2],
+    sellerName: users[2].name,
     category: "Jewelry",
     condition: "Excellent",
     status: "active",
@@ -566,36 +583,35 @@ export const getAuctions = (filter: AuctionFilter = {}): Promise<AuctionItem[]> 
       
       // Apply filters
       if (filter.category && filter.category !== 'all') {
-        filtered = filtered.filter(auction => auction.category === filter.category);
+        filtered = filtered.filter((auction) => auction.category === filter.category);
       }
       
       if (filter.status) {
-        filtered = filtered.filter(auction => auction.status === filter.status);
+        filtered = filtered.filter((auction) => auction.status === filter.status);
       }
       
       if (filter.seller) {
-        filtered = filtered.filter(auction => auction.seller.id === filter.seller);
+        filtered = filtered.filter((auction) => auction.seller.id === filter.seller);
       }
       
       if (filter.featured) {
-        filtered = filtered.filter(auction => auction.featured);
+        filtered = filtered.filter((auction) => auction.featured);
       }
       
       if (filter.minPrice) {
-        filtered = filtered.filter(auction => auction.currentPrice >= filter.minPrice);
+        filtered = filtered.filter((auction) => auction.currentPrice >= filter.minPrice);
       }
       
       if (filter.maxPrice) {
-        filtered = filtered.filter(auction => auction.currentPrice <= filter.maxPrice);
+        filtered = filtered.filter((auction) => auction.currentPrice <= filter.maxPrice);
       }
       
       if (filter.search) {
         const searchLower = filter.search.toLowerCase();
-        filtered = filtered.filter(
-          auction => 
-            auction.title.toLowerCase().includes(searchLower) || 
-            auction.description.toLowerCase().includes(searchLower) ||
-            auction.category.toLowerCase().includes(searchLower)
+        filtered = filtered.filter((auction) => 
+          auction.title.toLowerCase().includes(searchLower) || 
+          auction.description.toLowerCase().includes(searchLower) || 
+          auction.category.toLowerCase().includes(searchLower)
         );
       }
       
@@ -607,10 +623,13 @@ export const getAuctions = (filter: AuctionFilter = {}): Promise<AuctionItem[]> 
 export const getAuctionById = (id: string): Promise<AuctionItem> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const auction = mockAuctions.find(a => a.id === id);
+      const auction = mockAuctions.find((a) => a.id === id);
       
       if (auction) {
-        resolve(auction);
+        resolve({
+          ...auction,
+          sellerName: auction.seller.name // Ensure sellerName is set
+        });
       } else {
         reject(new Error("Auction not found"));
       }
@@ -618,10 +637,10 @@ export const getAuctionById = (id: string): Promise<AuctionItem> => {
   });
 };
 
-export const placeBid = (auctionId: string, userId: string, userName: string, amount: number): Promise<Bid> => {
+export const placeBid = (auctionId: string, userId: string, amount: number): Promise<AuctionItem> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const auctionIndex = mockAuctions.findIndex(a => a.id === auctionId);
+      const auctionIndex = mockAuctions.findIndex((a) => a.id === auctionId);
       
       if (auctionIndex === -1) {
         reject(new Error("Auction not found"));
@@ -629,7 +648,7 @@ export const placeBid = (auctionId: string, userId: string, userName: string, am
       }
       
       const auction = { ...mockAuctions[auctionIndex] };
-      const bidder = users.find(u => u.id === userId);
+      const bidder = users.find((u) => u.id === userId);
       
       if (!bidder) {
         reject(new Error("User not found"));
@@ -656,7 +675,7 @@ export const placeBid = (auctionId: string, userId: string, userName: string, am
         amount,
         timestamp: new Date().toISOString(),
         bidder,
-        userName: userName || bidder.name
+        userName: bidder.name
       };
       
       auction.bids = [...auction.bids, newBid];
@@ -664,7 +683,7 @@ export const placeBid = (auctionId: string, userId: string, userName: string, am
       
       mockAuctions[auctionIndex] = auction;
       
-      resolve(newBid);
+      resolve(auction);
     }, 600);
   });
 };
@@ -672,7 +691,7 @@ export const placeBid = (auctionId: string, userId: string, userName: string, am
 export const createAuction = (auctionData: Partial<AuctionItem>, sellerId: string): Promise<AuctionItem> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const seller = users.find(u => u.id === sellerId);
+      const seller = users.find((u) => u.id === sellerId);
       
       if (!seller) {
         reject(new Error("Seller not found"));
@@ -695,6 +714,7 @@ export const createAuction = (auctionData: Partial<AuctionItem>, sellerId: strin
         startDate: auctionData.startDate || new Date().toISOString(),
         endDate: auctionData.endDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         seller: seller,
+        sellerName: seller.name,
         category: auctionData.category || "Other",
         condition: auctionData.condition || "Used",
         status: auctionData.status || 'pending',
