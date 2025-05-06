@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { formatCurrency } from '@/services/auctionService';
 import CountdownTimer from './CountdownTimer';
 import { AuctionItem } from '@/services/auctionService';
-import { Eye, Tag } from 'lucide-react';
+import { Eye, Tag, IndianRupee } from 'lucide-react';
 
 interface AuctionCardProps {
   auction: AuctionItem;
@@ -41,8 +41,9 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
           <h3 className="text-lg font-medium text-gray-800 line-clamp-1">{title}</h3>
           
           <div className="mt-1 flex items-center justify-between">
-            <div className="font-semibold text-auction-primary">
-              {formatCurrency(currentPrice)}
+            <div className="font-semibold text-auction-primary flex items-center">
+              <IndianRupee className="h-3 w-3 mr-1" />
+              {formatCurrency(currentPrice, false)}
             </div>
             <div className="text-sm text-gray-500">
               {bids.length} bid{bids.length !== 1 ? 's' : ''}

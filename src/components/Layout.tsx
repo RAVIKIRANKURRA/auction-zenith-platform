@@ -10,9 +10,9 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navigation />
+      <Navigation siteName="RSGM Vintage Auctions" />
       <main className="flex-grow">{children}</main>
-      <Footer />
+      <Footer siteName="RSGM Vintage Auctions" />
     </div>
   );
 };

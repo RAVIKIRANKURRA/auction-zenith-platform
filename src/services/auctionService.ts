@@ -1,314 +1,708 @@
 
-// Mock data for auctions
+import { v4 as uuidv4 } from 'uuid';
 
-export interface Bid {
-  id: string;
-  userId: string;
-  userName: string;
-  amount: number;
-  timestamp: Date;
-}
-
+// Types
 export interface AuctionItem {
   id: string;
   title: string;
   description: string;
-  sellerId: string;
-  sellerName: string;
-  category: string;
+  images: string[];
   startingPrice: number;
   currentPrice: number;
-  images: string[];
-  startDate: Date;
-  endDate: Date;
+  minIncrement: number;
+  startDate: string;
+  endDate: string;
+  seller: User;
+  category: string;
+  condition: string;
+  status: 'pending' | 'active' | 'closed';
   bids: Bid[];
-  status: 'active' | 'closed' | 'pending';
+  featured?: boolean;
 }
 
-// Mock auction items
-let mockAuctions: AuctionItem[] = [
+export interface Bid {
+  id: string;
+  amount: number;
+  timestamp: string;
+  bidder: User;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  role: 'admin' | 'seller' | 'bidder';
+}
+
+interface AuctionFilter {
+  category?: string;
+  status?: 'pending' | 'active' | 'closed';
+  seller?: string;
+  featured?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+  search?: string;
+}
+
+// Helper to generate random date within range
+const randomDate = (start: Date, end: Date) => {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString();
+};
+
+// Mock data
+const users: User[] = [
   {
-    id: '1',
-    title: 'Vintage Mechanical Watch',
-    description: 'A beautiful 1960s Swiss mechanical watch in excellent condition. Features a 36mm stainless steel case, automatic movement, and original leather strap.',
-    sellerId: '2',
-    sellerName: 'Seller User',
-    category: 'Watches',
-    startingPrice: 500,
-    currentPrice: 650,
-    images: ['https://images.unsplash.com/photo-1508057198894-247b23fe5ade?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80'],
-    startDate: new Date(Date.now() - 86400000), // 1 day ago
-    endDate: new Date(Date.now() + 172800000), // 2 days from now
-    bids: [
-      {
-        id: '101',
-        userId: '3',
-        userName: 'Bidder User',
-        amount: 650,
-        timestamp: new Date(Date.now() - 3600000)
-      },
-      {
-        id: '100',
-        userId: '4',
-        userName: 'Jane Doe',
-        amount: 600,
-        timestamp: new Date(Date.now() - 7200000)
-      }
-    ],
-    status: 'active'
+    id: "user1",
+    name: "Ravi Kumar",
+    email: "ravi@rsgmauctions.com",
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+    role: "admin"
   },
   {
-    id: '2',
-    title: 'Modern Art Painting',
-    description: 'Original abstract painting by contemporary artist Maria Lopez. Acrylic on canvas, 80x120cm, signed by the artist. Certificate of authenticity included.',
-    sellerId: '2',
-    sellerName: 'Seller User',
-    category: 'Art',
-    startingPrice: 1200,
-    currentPrice: 1500,
-    images: ['https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80'],
-    startDate: new Date(Date.now() - 172800000), // 2 days ago
-    endDate: new Date(Date.now() + 259200000), // 3 days from now
-    bids: [
-      {
-        id: '102',
-        userId: '5',
-        userName: 'John Smith',
-        amount: 1500,
-        timestamp: new Date(Date.now() - 10800000)
-      },
-      {
-        id: '103',
-        userId: '3',
-        userName: 'Bidder User',
-        amount: 1350,
-        timestamp: new Date(Date.now() - 14400000)
-      }
-    ],
-    status: 'active'
+    id: "user2",
+    name: "Shiva Reddy",
+    email: "shiva@rsgmauctions.com",
+    avatar: "https://randomuser.me/api/portraits/men/2.jpg",
+    role: "seller"
   },
   {
-    id: '3',
-    title: 'Antique Oak Desk',
-    description: 'Beautiful 19th century oak writing desk with original hardware and a leather writing surface. Features three drawers and ornate carved details.',
-    sellerId: '6',
-    sellerName: 'Antique Dealer',
-    category: 'Furniture',
-    startingPrice: 800,
-    currentPrice: 1100,
-    images: ['https://images.unsplash.com/photo-1554295405-abb8fd54f153?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80'],
-    startDate: new Date(Date.now() - 259200000), // 3 days ago
-    endDate: new Date(Date.now() + 86400000), // 1 day from now
-    bids: [
-      {
-        id: '104',
-        userId: '7',
-        userName: 'Furniture Collector',
-        amount: 1100,
-        timestamp: new Date(Date.now() - 18000000)
-      },
-      {
-        id: '105',
-        userId: '8',
-        userName: 'Interior Designer',
-        amount: 950,
-        timestamp: new Date(Date.now() - 25200000)
-      }
-    ],
-    status: 'active'
+    id: "user3",
+    name: "Gowtham Patel",
+    email: "gowtham@rsgmauctions.com",
+    avatar: "https://randomuser.me/api/portraits/men/3.jpg",
+    role: "seller"
   },
   {
-    id: '4',
-    title: 'Rare First Edition Book',
-    description: 'First edition of "The Great Gatsby" by F. Scott Fitzgerald, 1925. In excellent condition with original dust jacket. A true collector\'s item.',
-    sellerId: '9',
-    sellerName: 'Book Dealer',
-    category: 'Books',
-    startingPrice: 15000,
-    currentPrice: 18500,
-    images: ['https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80'],
-    startDate: new Date(Date.now() - 432000000), // 5 days ago
-    endDate: new Date(Date.now() + 432000000), // 5 days from now
-    bids: [
-      {
-        id: '106',
-        userId: '10',
-        userName: 'Book Collector',
-        amount: 18500,
-        timestamp: new Date(Date.now() - 36000000)
-      },
-      {
-        id: '107',
-        userId: '11',
-        userName: 'Literature Professor',
-        amount: 17200,
-        timestamp: new Date(Date.now() - 43200000)
-      }
-    ],
-    status: 'active'
+    id: "user4",
+    name: "Manoj Singh",
+    email: "manoj@rsgmauctions.com",
+    avatar: "https://randomuser.me/api/portraits/men/4.jpg",
+    role: "bidder"
+  },
+  {
+    id: "user5",
+    name: "Priya Sharma",
+    email: "priya@example.com",
+    avatar: "https://randomuser.me/api/portraits/women/1.jpg",
+    role: "bidder"
+  },
+  {
+    id: "user6",
+    name: "Vikram Malhotra",
+    email: "vikram@example.com",
+    avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+    role: "bidder"
+  },
+  {
+    id: "user7",
+    name: "Ananya Desai",
+    email: "ananya@example.com",
+    avatar: "https://randomuser.me/api/portraits/women/2.jpg",
+    role: "bidder"
   }
 ];
 
-// Get all auction items
-export const getAuctions = async (filter?: {
-  category?: string;
-  status?: 'active' | 'closed' | 'pending';
-  sellerId?: string;
-}): Promise<AuctionItem[]> => {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  let filteredAuctions = [...mockAuctions];
-  
-  if (filter?.category) {
-    filteredAuctions = filteredAuctions.filter(item => item.category === filter.category);
+// Create more auction items with Indian context
+const mockAuctions: AuctionItem[] = [
+  {
+    id: "auction1",
+    title: "Vintage Brass Maharaja Sculpture",
+    description: "Exquisite 19th century brass sculpture of an Indian Maharaja on horseback. This piece showcases the intricate craftsmanship of traditional Indian metalwork with fine details and patina of age. Height: 30cm.",
+    images: ["https://images.unsplash.com/photo-1618160702438-9b02ab6515c9"],
+    startingPrice: 15000,
+    currentPrice: 22500,
+    minIncrement: 1000,
+    startDate: randomDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)),
+    seller: users[1],
+    category: "Art",
+    condition: "Good",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 16000,
+        timestamp: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[3]
+      },
+      {
+        id: uuidv4(),
+        amount: 18000,
+        timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[4]
+      },
+      {
+        id: uuidv4(),
+        amount: 22500,
+        timestamp: randomDate(new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[6]
+      }
+    ],
+    featured: true
+  },
+  {
+    id: "auction2",
+    title: "1940s HMV Gramophone Record Player",
+    description: "Fully functional antique HMV (His Master's Voice) gramophone record player from the 1940s. This iconic piece of music history features the original brass horn, hand crank mechanism, and wooden cabinet with minimal wear.",
+    images: ["https://images.unsplash.com/photo-1487958449943-2429e8be8625"],
+    startingPrice: 38000,
+    currentPrice: 42000,
+    minIncrement: 2000,
+    startDate: randomDate(new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)),
+    seller: users[2],
+    category: "Electronics",
+    condition: "Excellent",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 40000,
+        timestamp: randomDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[4]
+      },
+      {
+        id: uuidv4(),
+        amount: 42000,
+        timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[5]
+      }
+    ],
+    featured: true
+  },
+  {
+    id: "auction3",
+    title: "Antique Tanjore Painting of Krishna",
+    description: "Beautiful 19th century Tanjore painting depicting Lord Krishna with traditional gold leaf work, precious stones, and vibrant colors. This piece comes from a noble family collection in Tamil Nadu and has been professionally restored and framed.",
+    images: ["https://images.unsplash.com/photo-1582562124811-c09040d0a901"],
+    startingPrice: 75000,
+    currentPrice: 92000,
+    minIncrement: 5000,
+    startDate: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)),
+    seller: users[1],
+    category: "Art",
+    condition: "Very Good",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 80000,
+        timestamp: randomDate(new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[6]
+      },
+      {
+        id: uuidv4(),
+        amount: 85000,
+        timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[3]
+      },
+      {
+        id: uuidv4(),
+        amount: 92000,
+        timestamp: randomDate(new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[5]
+      }
+    ]
+  },
+  {
+    id: "auction4",
+    title: "Vintage Rolex Oyster Perpetual Watch",
+    description: "Authentic 1960s Rolex Oyster Perpetual in stainless steel with original dial and movement. This classic timepiece has been serviced by a certified watchmaker and keeps excellent time.",
+    images: ["https://images.unsplash.com/photo-1721322800607-8c38375eef04"],
+    startingPrice: 180000,
+    currentPrice: 205000,
+    minIncrement: 5000,
+    startDate: randomDate(new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), new Date(Date.now() + 12 * 24 * 60 * 60 * 1000)),
+    seller: users[2],
+    category: "Watches",
+    condition: "Excellent",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 185000,
+        timestamp: randomDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[3]
+      },
+      {
+        id: uuidv4(),
+        amount: 195000,
+        timestamp: randomDate(new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[4]
+      },
+      {
+        id: uuidv4(),
+        amount: 205000,
+        timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[6]
+      }
+    ],
+    featured: true
+  },
+  {
+    id: "auction5",
+    title: "Rare Silver Colonial-Era Indian Coins",
+    description: "Collection of 12 silver coins from British India, dating from 1835-1947. Includes rare specimens featuring portraits of Queen Victoria, King Edward VII, and King George V and VI. Each coin has been authenticated and comes with a certificate.",
+    images: ["https://images.unsplash.com/photo-1543699936-c901ddbf0c05"],
+    startingPrice: 25000,
+    currentPrice: 36000,
+    minIncrement: 1000,
+    startDate: randomDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), new Date(Date.now() + 9 * 24 * 60 * 60 * 1000)),
+    seller: users[1],
+    category: "Coins",
+    condition: "Very Good",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 26000,
+        timestamp: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[5]
+      },
+      {
+        id: uuidv4(),
+        amount: 30000,
+        timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[3]
+      },
+      {
+        id: uuidv4(),
+        amount: 36000,
+        timestamp: randomDate(new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[6]
+      }
+    ]
+  },
+  {
+    id: "auction6",
+    title: "Antique Rosewood Carved Chaise Lounge",
+    description: "Exquisite 19th century rosewood chaise lounge with intricate hand-carved details and original red velvet upholstery. This piece exemplifies the finest craftsmanship of colonial-era Indian furniture.",
+    images: ["https://images.unsplash.com/photo-1550581190-9c1c48d21d6c"],
+    startingPrice: 48000,
+    currentPrice: 65000,
+    minIncrement: 3000,
+    startDate: randomDate(new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)),
+    seller: users[2],
+    category: "Furniture",
+    condition: "Good",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 51000,
+        timestamp: randomDate(new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[4]
+      },
+      {
+        id: uuidv4(),
+        amount: 58000,
+        timestamp: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[5]
+      },
+      {
+        id: uuidv4(),
+        amount: 65000,
+        timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[3]
+      }
+    ],
+    featured: true
+  },
+  {
+    id: "auction7",
+    title: "Vintage Silk Banarasi Saree",
+    description: "Stunning pure silk Banarasi saree from the 1950s with real gold zari work. This exquisite piece features traditional motifs of peacocks and lotus flowers in vibrant red and gold. Comes with original blouse piece and presentation box.",
+    images: ["https://images.unsplash.com/photo-1523194258983-4981bbd7d403"],
+    startingPrice: 32000,
+    currentPrice: 47000,
+    minIncrement: 2000,
+    startDate: randomDate(new Date(Date.now() - 11 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), new Date(Date.now() + 8 * 24 * 60 * 60 * 1000)),
+    seller: users[1],
+    category: "Clothing",
+    condition: "Excellent",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 34000,
+        timestamp: randomDate(new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[6]
+      },
+      {
+        id: uuidv4(),
+        amount: 41000,
+        timestamp: randomDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[4]
+      },
+      {
+        id: uuidv4(),
+        amount: 47000,
+        timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[5]
+      }
+    ]
+  },
+  {
+    id: "auction8",
+    title: "First Edition 'Discovery of India' by Nehru",
+    description: "Rare first edition of 'The Discovery of India' by Jawaharlal Nehru, published in 1946. This hardcover copy is in remarkable condition with original dust jacket and includes a personal inscription from the author.",
+    images: ["https://images.unsplash.com/photo-1476275466078-4007374efbbe"],
+    startingPrice: 18000,
+    currentPrice: 26500,
+    minIncrement: 1000,
+    startDate: randomDate(new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), new Date(Date.now() + 11 * 24 * 60 * 60 * 1000)),
+    seller: users[2],
+    category: "Books",
+    condition: "Very Good",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 19000,
+        timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[3]
+      },
+      {
+        id: uuidv4(),
+        amount: 23000,
+        timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[5]
+      },
+      {
+        id: uuidv4(),
+        amount: 26500,
+        timestamp: randomDate(new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[4]
+      }
+    ]
+  },
+  {
+    id: "auction9",
+    title: "Vintage Silver Kundan Jewellery Set",
+    description: "Exquisite 1920s silver kundan necklace, earrings, and tikka set featuring emeralds, rubies, and pearl detailing. This traditional bridal set from a Rajasthani royal family showcases exemplary craftsmanship of the era.",
+    images: ["https://images.unsplash.com/photo-1535632066927-ab7c9ab60908"],
+    startingPrice: 120000,
+    currentPrice: 155000,
+    minIncrement: 5000,
+    startDate: randomDate(new Date(Date.now() - 12 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), new Date(Date.now() + 9 * 24 * 60 * 60 * 1000)),
+    seller: users[1],
+    category: "Jewelry",
+    condition: "Excellent",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 125000,
+        timestamp: randomDate(new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[6]
+      },
+      {
+        id: uuidv4(),
+        amount: 140000,
+        timestamp: randomDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[4]
+      },
+      {
+        id: uuidv4(),
+        amount: 155000,
+        timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[5]
+      }
+    ],
+    featured: true
+  },
+  {
+    id: "auction10",
+    title: "Antique Bronze Nataraja Statue",
+    description: "Magnificent early 20th century bronze statue of Lord Shiva as Nataraja, the cosmic dancer. This impressive piece stands 45cm tall and displays exceptional detailing in the traditional Chola style with a beautiful patina.",
+    images: ["https://images.unsplash.com/photo-1582978849846-03e4daa365f3"],
+    startingPrice: 85000,
+    currentPrice: 108000,
+    minIncrement: 3000,
+    startDate: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 8 * 24 * 60 * 60 * 1000), new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)),
+    seller: users[2],
+    category: "Art",
+    condition: "Very Good",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 88000,
+        timestamp: randomDate(new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[3]
+      },
+      {
+        id: uuidv4(),
+        amount: 95000,
+        timestamp: randomDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[4]
+      },
+      {
+        id: uuidv4(),
+        amount: 108000,
+        timestamp: randomDate(new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[6]
+      }
+    ]
+  },
+  {
+    id: "auction11",
+    title: "1940s Vintage Bollywood Movie Posters Collection",
+    description: "Rare collection of five original hand-painted Bollywood movie posters from the 1940s, including classics starring Nargis, Raj Kapoor, and Dilip Kumar. These large format posters have been professionally restored and mounted for preservation.",
+    images: ["https://images.unsplash.com/photo-1616832880554-b8711dee05c3"],
+    startingPrice: 42000,
+    currentPrice: 56000,
+    minIncrement: 2000,
+    startDate: randomDate(new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)),
+    seller: users[1],
+    category: "Art",
+    condition: "Good",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 44000,
+        timestamp: randomDate(new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[5]
+      },
+      {
+        id: uuidv4(),
+        amount: 50000,
+        timestamp: randomDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[3]
+      },
+      {
+        id: uuidv4(),
+        amount: 56000,
+        timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[4]
+      }
+    ]
+  },
+  {
+    id: "auction12",
+    title: "Vintage Ceylon Sapphire Ring",
+    description: "Stunning 1930s Art Deco 18k gold ring featuring a 3.5 carat natural Ceylon sapphire surrounded by diamond accents. This elegant piece comes with gemological certification and original jeweler's box.",
+    images: ["https://images.unsplash.com/photo-1611652022419-a9419f74343d"],
+    startingPrice: 230000,
+    currentPrice: 280000,
+    minIncrement: 10000,
+    startDate: randomDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()),
+    endDate: randomDate(new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), new Date(Date.now() + 12 * 24 * 60 * 60 * 1000)),
+    seller: users[2],
+    category: "Jewelry",
+    condition: "Excellent",
+    status: "active",
+    bids: [
+      {
+        id: uuidv4(),
+        amount: 240000,
+        timestamp: randomDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[6]
+      },
+      {
+        id: uuidv4(),
+        amount: 260000,
+        timestamp: randomDate(new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[4]
+      },
+      {
+        id: uuidv4(),
+        amount: 280000,
+        timestamp: randomDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), new Date()),
+        bidder: users[5]
+      }
+    ],
+    featured: true
   }
-  
-  if (filter?.status) {
-    filteredAuctions = filteredAuctions.filter(item => item.status === filter.status);
-  }
-  
-  if (filter?.sellerId) {
-    filteredAuctions = filteredAuctions.filter(item => item.sellerId === filter.sellerId);
-  }
-  
-  return filteredAuctions;
+];
+
+// Format currency to Indian Rupees
+export const formatCurrency = (amount: number, withSymbol: boolean = true) => {
+  // Format with comma separators for Indian number system (lakhs and crores)
+  const formattedAmount = amount.toLocaleString('en-IN');
+  return withSymbol ? `₹${formattedAmount}` : formattedAmount;
 };
 
-// Get auction item by ID
-export const getAuctionById = async (id: string): Promise<AuctionItem | null> => {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  const auction = mockAuctions.find(item => item.id === id);
-  return auction || null;
-};
-
-// Place a bid
-export const placeBid = async (
-  auctionId: string,
-  userId: string,
-  userName: string,
-  amount: number
-): Promise<Bid> => {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  const auction = mockAuctions.find(item => item.id === auctionId);
-  
-  if (!auction) {
-    throw new Error('Auction not found');
-  }
-  
-  if (auction.status !== 'active') {
-    throw new Error('Auction is not active');
-  }
-  
-  if (auction.endDate < new Date()) {
-    auction.status = 'closed';
-    throw new Error('Auction has ended');
-  }
-  
-  if (amount <= auction.currentPrice) {
-    throw new Error('Bid amount must be higher than current price');
-  }
-  
-  const newBid: Bid = {
-    id: Math.random().toString(36).substr(2, 9),
-    userId,
-    userName,
-    amount,
-    timestamp: new Date()
-  };
-  
-  auction.bids.unshift(newBid);
-  auction.currentPrice = amount;
-  
-  return newBid;
-};
-
-// Create a new auction
-export const createAuction = async (
-  title: string,
-  description: string,
-  sellerId: string,
-  sellerName: string,
-  category: string,
-  startingPrice: number,
-  images: string[],
-  endDate: Date
-): Promise<AuctionItem> => {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  const newAuction: AuctionItem = {
-    id: Math.random().toString(36).substr(2, 9),
-    title,
-    description,
-    sellerId,
-    sellerName,
-    category,
-    startingPrice,
-    currentPrice: startingPrice,
-    images,
-    startDate: new Date(),
-    endDate,
-    bids: [],
-    status: 'active'
-  };
-  
-  mockAuctions.push(newAuction);
-  
-  return newAuction;
-};
-
-// Update auction status
-export const updateAuctionStatus = async (
-  auctionId: string,
-  status: 'active' | 'closed' | 'pending'
-): Promise<AuctionItem> => {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  const auction = mockAuctions.find(item => item.id === auctionId);
-  
-  if (!auction) {
-    throw new Error('Auction not found');
-  }
-  
-  auction.status = status;
-  
-  return auction;
-};
-
-// Helper function to format currency
-export const formatCurrency = (amount: number): string => {
-  return amount.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0
-  });
-};
-
-// Helper function to calculate time remaining
-export const calculateTimeRemaining = (endDate: Date): {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  isEnded: boolean;
-} => {
-  const now = new Date();
-  const difference = endDate.getTime() - now.getTime();
+// Calculate time remaining for auction
+export const calculateTimeRemaining = (endDate: string) => {
+  const end = new Date(endDate).getTime();
+  const now = new Date().getTime();
+  const difference = end - now;
   
   if (difference <= 0) {
-    return { days: 0, hours: 0, minutes: 0, seconds: 0, isEnded: true };
+    return "Auction ended";
   }
   
   const days = Math.floor(difference / (1000 * 60 * 60 * 24));
   const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((difference % (1000 * 60)) / 1000);
   
-  return { days, hours, minutes, seconds, isEnded: false };
+  if (days > 0) {
+    return `${days}d ${hours}h remaining`;
+  } else if (hours > 0) {
+    return `${hours}h ${minutes}m remaining`;
+  } else {
+    return `${minutes}m remaining`;
+  }
+};
+
+// Mock API functions
+export const getAuctions = (filter: AuctionFilter = {}): Promise<AuctionItem[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      let filtered = [...mockAuctions];
+      
+      // Apply filters
+      if (filter.category && filter.category !== 'all') {
+        filtered = filtered.filter(auction => auction.category === filter.category);
+      }
+      
+      if (filter.status) {
+        filtered = filtered.filter(auction => auction.status === filter.status);
+      }
+      
+      if (filter.seller) {
+        filtered = filtered.filter(auction => auction.seller.id === filter.seller);
+      }
+      
+      if (filter.featured) {
+        filtered = filtered.filter(auction => auction.featured);
+      }
+      
+      if (filter.minPrice) {
+        filtered = filtered.filter(auction => auction.currentPrice >= filter.minPrice);
+      }
+      
+      if (filter.maxPrice) {
+        filtered = filtered.filter(auction => auction.currentPrice <= filter.maxPrice);
+      }
+      
+      if (filter.search) {
+        const searchLower = filter.search.toLowerCase();
+        filtered = filtered.filter(
+          auction => 
+            auction.title.toLowerCase().includes(searchLower) || 
+            auction.description.toLowerCase().includes(searchLower) ||
+            auction.category.toLowerCase().includes(searchLower)
+        );
+      }
+      
+      resolve(filtered);
+    }, 800);
+  });
+};
+
+export const getAuctionById = (id: string): Promise<AuctionItem> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const auction = mockAuctions.find(a => a.id === id);
+      
+      if (auction) {
+        resolve(auction);
+      } else {
+        reject(new Error("Auction not found"));
+      }
+    }, 500);
+  });
+};
+
+export const placeBid = (auctionId: string, userId: string, amount: number): Promise<AuctionItem> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const auctionIndex = mockAuctions.findIndex(a => a.id === auctionId);
+      
+      if (auctionIndex === -1) {
+        reject(new Error("Auction not found"));
+        return;
+      }
+      
+      const auction = { ...mockAuctions[auctionIndex] };
+      const bidder = users.find(u => u.id === userId);
+      
+      if (!bidder) {
+        reject(new Error("User not found"));
+        return;
+      }
+      
+      if (auction.status !== 'active') {
+        reject(new Error("Auction is not active"));
+        return;
+      }
+      
+      if (amount <= auction.currentPrice) {
+        reject(new Error("Bid must be higher than current price"));
+        return;
+      }
+      
+      if (amount < auction.currentPrice + auction.minIncrement) {
+        reject(new Error(`Minimum bid increment is ${formatCurrency(auction.minIncrement)}`));
+        return;
+      }
+      
+      const newBid: Bid = {
+        id: uuidv4(),
+        amount,
+        timestamp: new Date().toISOString(),
+        bidder
+      };
+      
+      auction.bids = [...auction.bids, newBid];
+      auction.currentPrice = amount;
+      
+      mockAuctions[auctionIndex] = auction;
+      
+      resolve(auction);
+    }, 600);
+  });
+};
+
+export const createAuction = (auctionData: Partial<AuctionItem>, sellerId: string): Promise<AuctionItem> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const seller = users.find(u => u.id === sellerId);
+      
+      if (!seller) {
+        reject(new Error("Seller not found"));
+        return;
+      }
+      
+      if (seller.role !== 'seller' && seller.role !== 'admin') {
+        reject(new Error("User does not have permission to create auctions"));
+        return;
+      }
+      
+      const newAuction: AuctionItem = {
+        id: uuidv4(),
+        title: auctionData.title || "Untitled Auction",
+        description: auctionData.description || "",
+        images: auctionData.images || [],
+        startingPrice: auctionData.startingPrice || 0,
+        currentPrice: auctionData.startingPrice || 0,
+        minIncrement: auctionData.minIncrement || 100,
+        startDate: auctionData.startDate || new Date().toISOString(),
+        endDate: auctionData.endDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        seller: seller,
+        category: auctionData.category || "Other",
+        condition: auctionData.condition || "Used",
+        status: auctionData.status || 'pending',
+        bids: [],
+        featured: auctionData.featured || false
+      };
+      
+      mockAuctions.push(newAuction);
+      
+      resolve(newAuction);
+    }, 800);
+  });
 };

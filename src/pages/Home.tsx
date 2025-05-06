@@ -5,7 +5,7 @@ import Layout from '@/components/Layout';
 import AuctionCard from '@/components/AuctionCard';
 import { Button } from '@/components/ui/button';
 import { AuctionItem, getAuctions } from '@/services/auctionService';
-import { Gavel, ArrowRight, Clock, Tag, Award, ShieldCheck } from 'lucide-react';
+import { Gavel, ArrowRight, Clock, Tag, Award, ShieldCheck, IndianRupee } from 'lucide-react';
 
 const Home = () => {
   const [featuredAuctions, setFeaturedAuctions] = useState<AuctionItem[]>([]);
@@ -33,7 +33,9 @@ const Home = () => {
     { name: 'Watches', icon: '⌚' },
     { name: 'Jewelry', icon: '💍' },
     { name: 'Furniture', icon: '🪑' },
-    { name: 'Books', icon: '📚' }
+    { name: 'Books', icon: '📚' },
+    { name: 'Vintage', icon: '🏺' },
+    { name: 'Coins', icon: '🪙' }
   ];
   
   return (
@@ -44,10 +46,10 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
-                Discover and Bid on <span className="text-auction-secondary">Exceptional Items</span>
+                Welcome to <span className="text-auction-secondary">RSGM Vintage Auctions</span>
               </h1>
               <p className="mt-4 text-lg text-gray-300">
-                Auction Zenith connects buyers and sellers in a secure marketplace for rare and valuable items.
+                Discover and bid on exceptional vintage items from around the world, with prices in Indian Rupees.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <Button 
@@ -101,6 +103,55 @@ const Home = () => {
         </div>
       </section>
       
+      {/* RSGM Ad Banner */}
+      <section className="py-8 bg-auction-secondary/10">
+        <div className="container mx-auto px-4">
+          <div className="bg-gradient-to-r from-auction-primary to-auction-secondary p-6 rounded-lg shadow-md text-white">
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div className="mb-4 md:mb-0">
+                <h2 className="text-2xl font-bold mb-2">RSGM Vintage Auctions</h2>
+                <p className="text-lg">
+                  <span className="font-bold">R</span>avi • 
+                  <span className="font-bold ml-2">S</span>hiva • 
+                  <span className="font-bold ml-2">G</span>owtham • 
+                  <span className="font-bold ml-2">M</span>anoj
+                </p>
+                <p className="mt-2 text-white/80">Curating the finest vintage collectibles since 2020</p>
+              </div>
+              <Button 
+                onClick={() => navigate('/about')}
+                className="bg-white text-auction-primary hover:bg-white/90"
+              >
+                Our Story
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Giveaway Ad Banner */}
+      <section className="py-8 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="border-2 border-dashed border-auction-secondary p-6 rounded-lg bg-auction-tertiary text-center">
+            <div className="animate-pulse inline-block mb-2 bg-auction-secondary text-white px-3 py-1 rounded-full text-sm font-semibold">
+              Special Announcement
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-auction-primary mb-2">
+              Exciting Giveaway Alert!
+            </h2>
+            <p className="text-lg mb-4">
+              There is a Giveaway in RSGM Vintage Auctions. Participate now and win exclusive collectibles!
+            </p>
+            <Button 
+              onClick={() => navigate('/giveaway')}
+              className="bg-auction-secondary hover:bg-auction-highlight text-white"
+            >
+              Join Giveaway
+            </Button>
+          </div>
+        </div>
+      </section>
+      
       {/* Featured Auctions */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -148,7 +199,7 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold text-auction-primary">
-              How Auction Zenith Works
+              How RSGM Vintage Auctions Works
             </h2>
             <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
               Join our community of buyers and sellers for a seamless auction experience
@@ -164,7 +215,7 @@ const Home = () => {
                 Browse & Bid
               </h3>
               <p className="text-gray-600">
-                Explore our wide selection of unique items and place bids on your favorites. Set your maximum bid and let our system handle the rest.
+                Explore our wide selection of unique vintage items and place bids in Indian Rupees. Set your maximum bid and let our system handle the rest.
               </p>
             </div>
             
@@ -198,7 +249,7 @@ const Home = () => {
               onClick={() => navigate('/register')}
               className="bg-auction-primary hover:bg-auction-primary/90"
             >
-              Join Auction Zenith Today
+              Join RSGM Vintage Auctions Today
             </Button>
           </div>
         </div>
@@ -221,7 +272,7 @@ const Home = () => {
               <ShieldCheck className="h-10 w-10 text-auction-secondary mb-4" />
               <h3 className="text-lg font-semibold mb-2">Secure Transactions</h3>
               <p className="text-gray-600 text-sm">
-                All financial transactions are processed through our secure payment system.
+                All financial transactions are processed through our secure payment system with support for Indian Rupees.
               </p>
             </div>
             
@@ -264,7 +315,7 @@ const Home = () => {
             Ready to Start Bidding?
           </h2>
           <p className="max-w-2xl mx-auto text-gray-300 mb-8">
-            Join thousands of buyers and sellers on Auction Zenith today. Create an account to start bidding on unique items or list your own treasures.
+            Join thousands of buyers and sellers on RSGM Vintage Auctions today. Create an account to start bidding on unique vintage items or list your own treasures.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button 
